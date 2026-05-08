@@ -17,14 +17,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+          # এখান থেকে cache: gradle সরিয়ে নেওয়া হয়েছে, কারণ আমরা নিচে আরও পাওয়ারফুল গ্রেডল ক্যাশ ব্যবহার করব
+
+      # 🟢 NEW: অফিশিয়াল গ্রেডল অ্যাকশন, যা ক্যাশ ধরে রাখতে সবচেয়ে বেশি কার্যকর
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
 
       - name: Make Gradlew Executable
         run: chmod +x gradlew
 
-      # এখানে clean কমান্ডটি যোগ করা হয়েছে পুরনো ক্যাশ মুছে ফেলার জন্য
-      - name: Build APK with Gradle (Clean Build)
-        run: ./gradlew clean assembleDebug
+      # 🟢 CHANGED: clean বাদ দেওয়া হয়েছে এবং ফাস্ট বিল্ডের জন্য --build-cache ও --parallel যুক্ত করা হয়েছে
+      - name: Build APK with Gradle (Incremental & Cached)
+        run: ./gradlew assembleDebug --build-cache --parallel
 
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
