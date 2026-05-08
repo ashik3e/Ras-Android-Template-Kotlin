@@ -33,12 +33,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-        debug {
-            // 🟢 গিটহাব এবং লোকাল বিল্ড ফাস্ট করার জন্য এক্সট্রা চেকিং বন্ধ রাখা
-            isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-DEBUG"
-        }
     }
     
     compileOptions {
