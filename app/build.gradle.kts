@@ -24,20 +24,32 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // 🟢 অ্যাপের সাইজ ছোট এবং পারফরম্যান্স ফাস্ট করার জন্য
+            isMinifyEnabled = true 
+            isShrinkResources = true 
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
+                // সাধারণ ফাইলের বদলে optimize.txt ব্যবহার করলে R8 আরও ভালোভাবে কোড অপ্টিমাইজ করে
+                getDefaultProguardFile("proguard-android-optimize.txt"), 
                 "proguard-rules.pro"
             )
         }
+        debug {
+            // 🟢 গিটহাব এবং লোকাল বিল্ড ফাস্ট করার জন্য এক্সট্রা চেকিং বন্ধ রাখা
+            isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+        }
     }
+    
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // 🟢 দ্রুত বিল্ড এবং মডার্ন কম্পাইলারের জন্য Java 17 ব্যবহার করা ভালো
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
+    
     buildFeatures {
         compose = true
     }
@@ -75,11 +87,11 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
     // ==========================================
-    // 🟢 NEW: Coil for loading Images/Favicons from Internet
+    // 🟢 Coil for loading Images/Favicons from Internet
     // ==========================================
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    // Firebase (রিমোট কন্ট্রোলের জন্য)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
