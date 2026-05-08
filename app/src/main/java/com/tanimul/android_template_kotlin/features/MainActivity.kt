@@ -90,61 +90,12 @@ class MainActivity : ComponentActivity() {
 }
 
 // ==========================================
-// 2. BOOT RECEIVER — Phone restart হলেও service চালু থাকবে
-// AndroidManifest.xml এ যোগ করতে হবে:
-//   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-//   <receiver android:name=".features.BootReceiver" android:exported="true">
-//       <intent-filter>
-//           <action android:name="android.intent.action.BOOT_COMPLETED"/>
-//           <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-//       </intent-filter>
-//   </receiver>
+// NOTE: BootReceiver is defined in BootReceiver.kt
+// Do NOT declare it here again to avoid Redeclaration error.
 // ==========================================
-class BootReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED ||
-            intent.action == "android.intent.action.QUICKBOOT_POWERON"
-        ) {
-            // Accessibility Service Android নিজেই চালু করে যদি user enable করে রাখে।
-            // কিন্তু আমরা DataManager init করে রাখি যাতে সব ডাটা ঠিক থাকে।
-            DataManager.init(context)
-
-            // Notification দিয়ে user কে জানাও যে protection active আছে
-            showBootNotification(context)
-        }
-    }
-
-    private fun showBootNotification(context: Context) {
-        val channelId = "RasFocus_Boot"
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId, "RasFocus Boot", NotificationManager.IMPORTANCE_DEFAULT
-            )
-            manager.createNotificationChannel(channel)
-        }
-
-        val pendingIntent = PendingIntent.getActivity(
-            context, 0,
-            Intent(context, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("RasFocus Active ✅")
-            .setContentText("Phone restart হয়েছে। Accessibility চালু আছে কিনা চেক করুন।")
-            .setSmallIcon(android.R.drawable.ic_secure)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
-
-        manager.notify(2001, notification)
-    }
-}
 
 // ==========================================
-// 3. ROOT NAVIGATION LOGIC
+// 2. ROOT NAVIGATION LOGIC
 // ==========================================
 @Composable
 fun AppRootNavigation() {
@@ -159,7 +110,7 @@ fun AppRootNavigation() {
 }
 
 // ==========================================
-// 4. PERMISSIONS PAGE
+// 3. PERMISSIONS PAGE
 // ==========================================
 @Composable
 fun PermissionsPage(onAllGranted: () -> Unit) {
@@ -235,7 +186,7 @@ fun PermissionCard(title: String, desc: String, granted: Boolean, onClick: () ->
 }
 
 // ==========================================
-// 5. MAIN APP LAYOUT WITH DRAWER
+// 4. MAIN APP LAYOUT WITH DRAWER
 // ==========================================
 @Composable
 fun RasFocusMainContent() {
@@ -308,7 +259,7 @@ fun RasFocusMainContent() {
 }
 
 // ==========================================
-// 6. SIDEBAR DESIGN
+// 5. SIDEBAR DESIGN
 // ==========================================
 @Composable
 fun RasFocusSidebar(currentRoute: String, onNavigate: (String) -> Unit) {
@@ -318,7 +269,6 @@ fun RasFocusSidebar(currentRoute: String, onNavigate: (String) -> Unit) {
             Text("Version 1.0 Pro", fontSize = 12.sp, color = Color(0xFFD0F0F0))
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ✅ সব Icon গুলো Material3-এ available এগুলো দিয়ে replace করা হয়েছে
             SidebarItem("Dashboard", Icons.Default.Dashboard, "dashboard", currentRoute, onNavigate)
             SidebarItem("App Blocks", Icons.Default.Shield, "blocks", currentRoute, onNavigate)
             SidebarItem("Adult Block", Icons.Default.Lock, "adult_block", currentRoute, onNavigate)
@@ -359,7 +309,7 @@ fun SidebarItem(
 }
 
 // ==========================================
-// 7. MAIN DASHBOARD SCREEN
+// 6. MAIN DASHBOARD SCREEN
 // ==========================================
 @Composable
 fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
@@ -483,7 +433,6 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // ✅ RocketLaunch → Star দিয়ে replace করা হয়েছে (Material3 compatible)
                     AnalyticsCard(
                         "Screen Time", "05 sec", "-99 percent",
                         Icons.Default.Timer, Modifier.weight(1f)
@@ -496,7 +445,6 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // ✅ Coffee → Psychology দিয়ে replace (Material3 compatible)
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -539,6 +487,8 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // NOTE: BottomNavItem is defined only in mainScreen.kt
+                // Using it here directly (no duplicate declaration in this file)
                 BottomNavItem("Dashboard", Icons.Default.Dashboard, selectedBottomTab == 0) {
                     selectedBottomTab = 0
                 }
@@ -546,7 +496,6 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
                     selectedBottomTab = 1
                     navController.navigate("blocks")
                 }
-                // ✅ Visibility → MenuBook দিয়ে replace
                 BottomNavItem("Study", Icons.Default.MenuBook, selectedBottomTab == 2) {
                     selectedBottomTab = 2
                     navController.navigate("deep_study")
@@ -559,23 +508,10 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
     }
 }
 
-@Composable
-fun BottomNavItem(
-    label: String,
-    icon: ImageVector,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(icon, contentDescription = label, tint = if (isSelected) ColTeal else Color.Gray)
-        Text(label, fontSize = 10.sp, color = if (isSelected) ColTeal else Color.Gray)
-    }
-}
+// ==========================================
+// NOTE: BottomNavItem is defined in mainScreen.kt
+// Do NOT declare it here again to avoid Conflicting overloads error.
+// ==========================================
 
 @Composable
 fun AnalyticsCard(
@@ -608,7 +544,7 @@ fun AnalyticsCard(
 }
 
 // ==========================================
-// 8. HELPER FUNCTIONS
+// 7. HELPER FUNCTIONS
 // ==========================================
 fun areAllPermissionsGranted(context: Context): Boolean {
     return isAccessibilityServiceEnabled(context) && AndroidSettings.canDrawOverlays(context)
@@ -625,7 +561,7 @@ fun isAccessibilityServiceEnabled(context: Context): Boolean {
 }
 
 // ==========================================
-// 9. ACCESSIBILITY SERVICE CLASS (Blocker Engine)
+// 8. ACCESSIBILITY SERVICE CLASS (Blocker Engine)
 // ==========================================
 class BlockerAccessibilityService : AccessibilityService() {
 
@@ -762,7 +698,6 @@ class BlockerAccessibilityService : AccessibilityService() {
 
         startForeground(NOTIFICATION_ID, buildNotification("Protection is Active", "Monitoring your focus..."))
 
-        // Session recovery after phone restart
         val isSavedActive = recoveryPrefs.getBoolean("isTimerActive", false)
         val targetEndTime = recoveryPrefs.getLong("targetEndTime", 0L)
         val sessionType = recoveryPrefs.getInt("sessionType", 0)
