@@ -496,41 +496,6 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
     }
 }
 
-// ==========================================
-// NOTE: BottomNavItem is defined in mainScreen.kt
-// Do NOT declare it here again to avoid Conflicting overloads error.
-// ==========================================
-
-@Composable
-fun AnalyticsCard(
-    title: String,
-    value: String,
-    subtitle: String,
-    icon: ImageVector,
-    modifier: Modifier,
-    onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = modifier.height(130.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Icon(icon, contentDescription = null, tint = ColTextDark, modifier = Modifier.size(24.dp))
-            Column {
-                Text(title, fontSize = 12.sp, color = Color.Gray)
-                Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = ColTextDark)
-                Text(subtitle, fontSize = 10.sp, color = Color(0xFF10B981))
-            }
-        }
-    }
-}
 
 // ==========================================
 // 7. HELPER FUNCTIONS
