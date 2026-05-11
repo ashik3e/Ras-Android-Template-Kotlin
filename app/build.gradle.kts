@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.tanimul.android_template_kotlin"
+    namespace = "com.rasel.RasFocus"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.tanimul.android_template_kotlin"
+        applicationId = "com.rasel.RasFocus"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
