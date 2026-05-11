@@ -224,34 +224,22 @@ fun RasFocusMainContent() {
                     HomeMainScreen(navController) { scope.launch { drawerState.open() } }
                 }
                 composable("blocks") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("App Blocks Page", Modifier.align(Alignment.Center))
-                    }
+                    Blocks()
                 }
                 composable("adult_block") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Adult Block Page", Modifier.align(Alignment.Center))
-                    }
+                    Adult_block()
                 }
                 composable("deep_study") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Deep Study Page", Modifier.align(Alignment.Center))
-                    }
+                    Deep_study()
                 }
                 composable("special_feature") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Special Feature Page", Modifier.align(Alignment.Center))
-                    }
+                    Speacial()
                 }
                 composable("statistics") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Statistics Page", Modifier.align(Alignment.Center))
-                    }
+                    Statistics()
                 }
                 composable("settings") {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Settings Page", Modifier.align(Alignment.Center))
-                    }
+                    Settings()
                 }
             }
         }
@@ -436,11 +424,11 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
                     AnalyticsCard(
                         "Screen Time", "05 sec", "-99 percent",
                         Icons.Default.Timer, Modifier.weight(1f)
-                    )
+                    ) {}
                     AnalyticsCard(
                         "App Launches", "1", "-363 launches",
                         Icons.Default.Star, Modifier.weight(1f)
-                    )
+                    ) {}
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -519,7 +507,8 @@ fun AnalyticsCard(
     value: String,
     subtitle: String,
     icon: ImageVector,
-    modifier: Modifier
+    modifier: Modifier,
+    onClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier.height(130.dp),
