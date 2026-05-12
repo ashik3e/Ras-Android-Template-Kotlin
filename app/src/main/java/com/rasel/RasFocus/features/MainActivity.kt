@@ -25,8 +25,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Block
@@ -306,10 +308,13 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize().background(ColBgContent)) {
 
+        val scrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 80.dp)
+                .verticalScroll(scrollState)
         ) {
             // Header
             Box(
