@@ -212,8 +212,8 @@ fun PermissionFlowScreen(onAllGranted: () -> Unit) {
                     } catch (e: Exception) {
                         context.startActivity(Intent(AndroidSettings.ACTION_SETTINGS))
                     }
-                    // Mark as acknowledged so we can proceed
-                    DataManager.prefs.edit().putBoolean("bg_service_ack", true).apply()
+                    // FIX: DataManager.prefs is private — use public helper method instead
+                    DataManager.setBgServiceAck(true)
                 },
                 onNo = {
                     Toast.makeText(context, "Background service must stay on for RasFocus to work.", Toast.LENGTH_LONG).show()
@@ -260,8 +260,8 @@ fun PermissionFlowScreen(onAllGranted: () -> Unit) {
                     }
                 },
                 onNo = {
-                    // User chose "Not Agree" — mark acknowledged and move on
-                    DataManager.prefs.edit().putBoolean("battery_opt_ack", true).apply()
+                    // FIX: DataManager.prefs is private — use public helper method instead
+                    DataManager.setBatteryOptAck(true)
                     currentStep = PermissionStep.DONE
                     onAllGranted()
                 }
@@ -377,8 +377,9 @@ fun PermissionDialog(
 // 5. PERMISSION CHECK HELPER FUNCTIONS
 // ==========================================
 fun areAllPermissionsGranted(context: Context): Boolean {
-    val bgAck = DataManager.prefs.getBoolean("bg_service_ack", false)
-    val batteryAck = DataManager.prefs.getBoolean("battery_opt_ack", false)
+    // FIX: DataManager.prefs is private — use public helper methods instead
+    val bgAck = DataManager.getBgServiceAck()
+    val batteryAck = DataManager.getBatteryOptAck()
     return isAccessibilityServiceEnabled(context) &&
             AndroidSettings.canDrawOverlays(context) &&
             bgAck &&
@@ -408,8 +409,8 @@ fun isBatteryOptimized(context: Context): Boolean {
 }
 
 fun isBackgroundServiceEnabled(context: Context): Boolean {
-    // We mark this as acknowledged by the user via prefs
-    return DataManager.prefs.getBoolean("bg_service_ack", false)
+    // FIX: DataManager.prefs is private — use public helper method instead
+    return DataManager.getBgServiceAck()
 }
 
 // ==========================================
@@ -525,6 +526,8 @@ fun SidebarItem(
 
 // ==========================================
 // 8. MAIN DASHBOARD SCREEN
+// FIX: AnalyticsCard calls updated to use mainValue/subValue parameter names
+//      (matching the single definition in mainScreen.kt)
 // ==========================================
 @Composable
 fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
@@ -648,13 +651,20 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // FIX: Updated parameter names to match mainScreen.kt's AnalyticsCard definition
                     AnalyticsCard(
-                        "Screen Time", "05 sec", "-99 percent",
-                        Icons.Default.Timer, Modifier.weight(1f)
+                        title = "Screen Time",
+                        mainValue = "05 sec",
+                        subValue = "-99 percent",
+                        icon = Icons.Default.Timer,
+                        modifier = Modifier.weight(1f)
                     ) {}
                     AnalyticsCard(
-                        "App Launches", "1", "-363 launches",
-                        Icons.Default.Star, Modifier.weight(1f)
+                        title = "App Launches",
+                        mainValue = "1",
+                        subValue = "-363 launches",
+                        icon = Icons.Default.Star,
+                        modifier = Modifier.weight(1f)
                     ) {}
                 }
 
@@ -690,6 +700,7 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
         }
 
         // BOTTOM NAVIGATION BAR
+        // NOTE: BottomNavItem is defined in mainScreen.kt — do NOT redeclare here
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -722,40 +733,14 @@ fun HomeMainScreen(navController: NavController, onOpenDrawer: () -> Unit) {
 }
 
 // ==========================================
-// NOTE: BottomNavItem is defined in mainScreen.kt
-// Do NOT declare it here again to avoid Conflicting overloads error.
+// NOTE: AnalyticsCard is defined ONLY in mainScreen.kt
+// It has been REMOVED from here to fix "Conflicting overloads" error.
 // ==========================================
 
-@Composable
-fun AnalyticsCard(
-    title: String,
-    value: String,
-    subtitle: String,
-    icon: ImageVector,
-    modifier: Modifier,
-    onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = modifier.height(130.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Icon(icon, contentDescription = null, tint = ColTextDark, modifier = Modifier.size(24.dp))
-            Column {
-                Text(title, fontSize = 12.sp, color = Color.Gray)
-                Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, color = ColTextDark)
-                Text(subtitle, fontSize = 10.sp, color = Color(0xFF10B981))
-            }
-        }
-    }
-}
+// ==========================================
+// NOTE: BottomNavItem is defined ONLY in mainScreen.kt
+// Do NOT declare it here again.
+// ==========================================
 
 // ==========================================
 // 9. ACCESSIBILITY SERVICE CLASS (Blocker Engine)
