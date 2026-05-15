@@ -1,4 +1,4 @@
-package com.rasel.RasFocus.features
+package com.rasel.RasFocus
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,12 +7,22 @@ object DataManager {
     private const val PREF_NAME = "RasFocusDataCache"
     private lateinit var prefs: SharedPreferences
 
-    // এটি MainActivity এবং Service থেকে কল করে ইনিশিয়ালাইজ করতে হবে
+    // এটি MainActivity এবং Service থেকে কল করে ইনিশিয়ালাইজ করতে হবে
     fun init(context: Context) {
         if (!this::prefs.isInitialized) {
             prefs = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         }
     }
+
+    // ==========================================
+    // FIX: Public helper methods for prefs access
+    // (prefs is private — these replace direct DataManager.prefs access)
+    // ==========================================
+    fun getBgServiceAck(): Boolean = prefs.getBoolean("bg_service_ack", false)
+    fun setBgServiceAck(value: Boolean) = prefs.edit().putBoolean("bg_service_ack", value).apply()
+
+    fun getBatteryOptAck(): Boolean = prefs.getBoolean("battery_opt_ack", false)
+    fun setBatteryOptAck(value: Boolean) = prefs.edit().putBoolean("battery_opt_ack", value).apply()
 
     // ==========================================
     // ১. Simple Blocks & General Settings
@@ -95,4 +105,24 @@ object DataManager {
     var isDeepStudyStrict: Boolean
         get() = prefs.getBoolean("isDeepStudyStrict", false)
         set(value) = prefs.edit().putBoolean("isDeepStudyStrict", value).apply()
+
+    var dsFocusMin: Int
+        get() = prefs.getInt("dsFocusMin", 25)
+        set(value) = prefs.edit().putInt("dsFocusMin", value).apply()
+
+    var dsRestMin: Int
+        get() = prefs.getInt("dsRestMin", 5)
+        set(value) = prefs.edit().putInt("dsRestMin", value).apply()
+
+    var dsKeepBlockingInBreak: Boolean
+        get() = prefs.getBoolean("dsKeepBlockingInBreak", false)
+        set(value) = prefs.edit().putBoolean("dsKeepBlockingInBreak", value).apply()
+
+    var dsAllowAppList: List<String>
+        get() = prefs.getString("dsAllowAppList", "")?.split(",")?.filter { it.isNotEmpty() } ?: emptyList()
+        set(value) = prefs.edit().putString("dsAllowAppList", value.joinToString(",")).apply()
+
+    var dsAllowWebList: List<String>
+        get() = prefs.getString("dsAllowWebList", "")?.split(",")?.filter { it.isNotEmpty() } ?: emptyList()
+        set(value) = prefs.edit().putString("dsAllowWebList", value.joinToString(",")).apply()
 }
