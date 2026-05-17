@@ -89,6 +89,14 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Cloudinary (screenshot upload)
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
+
+    // Google Play Services — Location
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
